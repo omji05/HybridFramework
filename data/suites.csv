@@ -1,0 +1,46 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"  In order to find and manage events
+  As a signed-in EventHub user
+  I want to browse events, start bookings, and create new events","62412","Book Now opens the event booking details form","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Events Discovery and Creation","Book Now opens the event booking details form",""
+"  In order to find and manage events
+  As a signed-in EventHub user
+  I want to browse events, start bookings, and create new events","62407","Events listing page displays upcoming events","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Events Discovery and Creation","Events listing page displays upcoming events",""
+"  In order to discover events quickly
+  As a signed-in EventHub user
+  I want to use the home page to explore the application","58620","A signed-in user can sign out and return to the login page","","Wed Jul 01 11:03:46 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Home Page","A signed-in user can sign out and return to the login page",""
+"  In order to review ticket purchases
+  As a signed-in EventHub user
+  I want to view and manage my bookings","61986","My Bookings page loads for a signed-in user","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub My Bookings","My Bookings page loads for a signed-in user",""
+"  As an EventHub platform user
+  I want to register and authenticate via the REST API
+  So that I can obtain a JWT for protected EventHub operations","3774","Successfully log in with valid credentials","","Wed Jul 01 11:03:43 UTC 2026","failed","Wed Jul 01 11:03:46 UTC 2026","","EventHub API - Authentication","Successfully log in with valid credentials",""
+"  As an authenticated EventHub user
+  I want to list and create events via the REST API
+  So that I can manage the event catalogue in my sandbox","4681","Retrieve all events","","Wed Jul 01 11:03:43 UTC 2026","failed","Wed Jul 01 11:03:47 UTC 2026","","EventHub API - Events","Retrieve all events",""
+"  In order to find and manage events
+  As a signed-in EventHub user
+  I want to browse events, start bookings, and create new events","62420","User can move from events page to the new event form","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Events Discovery and Creation","User can move from events page to the new event form",""
+"  In order to discover events quickly
+  As a signed-in EventHub user
+  I want to use the home page to explore the application","61659","Navigation bar exposes primary application sections","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Home Page","Navigation bar exposes primary application sections",""
+"  As a test engineer
+  I want to stub the login API in-process
+  So that tests run reliably in CI without hitting the real backend","676","Invalid login returns 401 file based stub","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:03:43 UTC 2026","","Login via WireMock file-based stub","Invalid login returns 401 file based stub",""
+"  In order to discover and book events
+  As a registered EventHub user
+  I want to securely sign in to my account","57508","A registered user can sign in with valid credentials","","Wed Jul 01 11:03:47 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub User Sign In","A registered user can sign in with valid credentials",""
+"  In order to discover and book events
+  As a registered EventHub user
+  I want to securely sign in to my account","43782","A failed authentication attempt does not establish a session","","Wed Jul 01 11:03:47 UTC 2026","passed","Wed Jul 01 11:04:31 UTC 2026","","EventHub User Sign In","A failed authentication attempt does not establish a session",""
+"  As a test engineer
+  I want to stub the login API in-process
+  So that tests run reliably in CI without hitting the real backend","619","Login returns stubbed token","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:03:43 UTC 2026","","Login via WireMock file-based stub","Login returns stubbed token",""
+"  In order to discover events quickly
+  As a signed-in EventHub user
+  I want to use the home page to explore the application","61491","User can navigate to Events from the home page","","Wed Jul 01 11:03:43 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Home Page","User can navigate to Events from the home page",""
+"  As an EventHub platform user
+  I want to register and authenticate via the REST API
+  So that I can obtain a JWT for protected EventHub operations","4720","Successfully register a new user","","Wed Jul 01 11:03:43 UTC 2026","passed","Wed Jul 01 11:03:47 UTC 2026","","EventHub API - Authentication","Successfully register a new user",""
+"  In order to discover events quickly
+  As a signed-in EventHub user
+  I want to use the home page to explore the application","62812","Home page displays hero content and featured events","","Wed Jul 01 11:03:42 UTC 2026","broken","Wed Jul 01 11:04:45 UTC 2026","","EventHub Home Page","Home page displays hero content and featured events",""
