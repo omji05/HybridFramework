@@ -1,5 +1,6 @@
 package com.hybrid.framework.listeners;
 
+import com.hybrid.framework.api.SensitiveDataRedactor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.ISuite;
@@ -24,6 +25,7 @@ public class TestNGListener implements ISuiteListener {
 
     @Override
     public void onFinish(ISuite suite) {
+        SensitiveDataRedactor.sanitizeAllureResults();
         LOG.info("═══ Suite finished: {} ═══", suite.getName());
     }
 }

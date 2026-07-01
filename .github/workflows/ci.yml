@@ -16,14 +16,18 @@ on:
         required: false
         default: 'chrome'
       environment:
-        description: 'Target environment (qa, staging, prod)'
+        description: 'Target environment (qa, staging)'
         required: false
         default: 'qa'
         type: choice
         options:
           - qa
           - staging
-          - prod
+      rerun_on_failure:
+        description: 'Rerun failed scenarios after primary run (manual runs only)'
+        required: false
+        default: false
+        type: boolean
 
 env:
   JAVA_VERSION: '17'
@@ -183,7 +187,7 @@ jobs:
   rerun:
     name: Rerun failures
     needs: test
-    if: failure()
+    if: failure() && github.event.inputs.rerun_on_failure == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

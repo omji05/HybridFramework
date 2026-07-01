@@ -29,6 +29,8 @@ import java.util.Map;
  * Logging verbosity is controlled by {@code api.log.verbose} (default {@code true}).
  * Sensitive headers are redacted from Rest Assured console logs when
  * {@code api.log.blacklist.enabled} is {@code true} (configurable header list).
+ * Sensitive JSON fields in Allure attachments are redacted after the suite via
+ * {@link SensitiveDataRedactor} when {@code api.log.redact.enabled} is {@code true}.
  * </p>
  *
  * <b>Usage — simple GET:</b>

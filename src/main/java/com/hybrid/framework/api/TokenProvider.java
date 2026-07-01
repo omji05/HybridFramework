@@ -57,7 +57,8 @@ public final class TokenProvider {
         if (response.statusCode() != expectedStatus) {
             throw new IllegalStateException(String.format(
                     "Token API returned status %d (expected %d). Body: %s",
-                    response.statusCode(), expectedStatus, response.asString()));
+                    response.statusCode(), expectedStatus,
+                    SensitiveDataRedactor.redact(response.asString())));
         }
 
         String jsonPath = config.getApiAuthTokenJsonPath();
