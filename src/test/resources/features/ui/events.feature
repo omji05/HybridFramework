@@ -7,33 +7,33 @@ Feature: EventHub Events Discovery and Creation
   Background:
     Given the user is signed in to EventHub
 
-  @smoke @EVENTS-001
+  @smoke @EVENTS-001 @P0
   Scenario: Events listing page displays upcoming events
     When the user navigates to the events listing page
     Then the events listing page should be displayed
     And the events listing should show available event cards
     And the Add New Event option should be visible on the events page
 
-  @regression @EVENTS-002
+  @regression @EVENTS-002 @P0
   Scenario: User can search the events listing
     When the user navigates to the events listing page
     And the user searches events for "Conference"
     Then the events listing page should be displayed
 
-  @smoke @EVENTS-003
+  @smoke @EVENTS-003 @P1
   Scenario: Book Now opens the event booking details form
     When the user navigates to the events listing page
     And the user selects Book Now on the first available event
     Then the event booking details form should be displayed
 
-  @smoke @EVENTS-004
+  @smoke @EVENTS-004 @P1
   Scenario: User can move from events page to the new event form
     When the user navigates to the events listing page
     And the user selects Add New Event from the events page
     Then the admin events page should be displayed
     And the new event form should be ready for data entry
 
-  @regression @EVENTS-005
+  @regression @EVENTS-005 @P2
   Scenario: User can fill new event details on the admin form
     When the user navigates to the events listing page
     And the user selects Add New Event from the events page
@@ -41,7 +41,7 @@ Feature: EventHub Events Discovery and Creation
     Then the admin events page should be displayed
     And the new event form should be ready for data entry
 
-  @regression @EVENTS-006
+  @regression @EVENTS-006 @P2
   Scenario: User can fill attendee details on the booking form
     When the user navigates to the events listing page
     And the user selects Book Now on the first available event
