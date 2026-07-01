@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RealWorld User Response",
+  "type": "object",
+  "required": ["user"],
+  "additionalProperties": false,
+  "properties": {
+    "user": {
+      "type": "object",
+      "required": ["email", "token", "username"],
+      "additionalProperties": true,
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "token": { "type": "string", "minLength": 1 },
+        "username": { "type": "string", "minLength": 1 },
+        "bio": { "type": ["string", "null"] },
+        "image": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EventHub Booking Response",
+  "type": "object",
+  "required": ["success", "data"],
+  "properties": {
+    "success": { "type": "boolean" },
+    "data": {
+      "type": "object",
+      "required": ["id", "eventId", "status", "bookingRef", "quantity"],
+      "properties": {
+        "id": { "type": "integer" },
+        "eventId": { "type": "integer" },
+        "customerName": { "type": "string" },
+        "customerEmail": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "quantity": { "type": "integer" },
+        "totalPrice": { "type": ["number", "string"] },
+        "status": { "type": "string" },
+        "bookingRef": { "type": "string" }
+      }
+    },
+    "message": { "type": "string" }
+  }
+}

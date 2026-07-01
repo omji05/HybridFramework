@@ -1,0 +1,319 @@
+name: Hybrid Framework CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'BDD suite profile (default, smoke, regression, api, mock)'
+        required: false
+        default: 'smoke'
+      browser:
+        description: 'Browser (chrome, firefox, edge)'
+        required: false
+        default: 'chrome'
+      environment:
+        description: 'Target environment (qa, staging, prod)'
+        required: false
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - staging
+          - prod
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  #                   JOB 1 — PRIMARY TEST RUN
+  # ═══════════════════════════════════════════════════════════════
+  test:
+    name: Primary (${{ github.event.inputs.suite || 'smoke' }} / ${{ github.event.inputs.environment || 'qa' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chrome ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 'stable'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run primary suite
+        id: primary
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+          API_AUTH_USERNAME: ${{ secrets.API_AUTH_USERNAME }}
+          API_AUTH_PASSWORD: ${{ secrets.API_AUTH_PASSWORD }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_LOG_VERBOSE: false
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'smoke' }}"
+          BROWSER="${{ matrix.browser }}"
+          TARGET_ENV="${{ github.event.inputs.environment || 'qa' }}"
+
+          MVN_ARGS="-Denvironment=$TARGET_ENV -Dbrowser=$BROWSER -Dheadless=true \
+            -Dbdd.rerun.enabled=false \
+            -Dtestng.suite.name=testng-bdd-primary.xml"
+
+          if [ "$SUITE" = "default" ]; then
+            mvn clean test $MVN_ARGS
+          else
+            mvn clean test -P$SUITE $MVN_ARGS
+          fi
+        continue-on-error: true
+
+      - name: Upload rerun list for retry job
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rerun-txt
+          path: target/rerun.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Load Allure history from gh-pages
+        if: always()
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Preserve Allure history (primary report only)
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          if [ -d gh-pages/history ]; then
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
+      - name: Generate primary Allure report
+        if: always()
+        run: mvn allure:report
+
+      - name: Upload primary Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-primary
+          path: target/site/allure-maven-plugin/
+          retention-days: 30
+
+      - name: Upload primary Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-primary
+          path: target/allure-results/
+          retention-days: 30
+
+      - name: Upload primary Cucumber report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-primary
+          path: target/cucumber-reports/cucumber.html
+          if-no-files-found: warn
+          retention-days: 30
+
+      # - name: Upload Extent report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: extent-report
+      #     path: target/reports/extent/
+      #     if-no-files-found: warn
+      #     retention-days: 30
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: target/reports/screenshots/
+          if-no-files-found: ignore
+          retention-days: 15
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-primary
+          path: logs/
+          if-no-files-found: warn
+          retention-days: 15
+
+      - name: Fail job if primary tests failed
+        if: steps.primary.outcome == 'failure'
+        run: exit 1
+
+  # ═══════════════════════════════════════════════════════════════
+  #              JOB 2 — RERUN FAILED SCENARIOS
+  # ═══════════════════════════════════════════════════════════════
+  rerun:
+    name: Rerun failures
+    needs: test
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chrome ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 'stable'
+
+      - name: Download rerun list
+        uses: actions/download-artifact@v4
+        with:
+          name: rerun-txt
+          path: target/
+
+      - name: Skip rerun when rerun list is empty
+        id: rerun_check
+        run: |
+          if [ ! -s target/rerun.txt ] || [ -z "$(tr -d '[:space:]' < target/rerun.txt)" ]; then
+            echo "No failed scenarios to rerun."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            cat target/rerun.txt
+          fi
+
+      - name: Run failed scenarios
+        if: steps.rerun_check.outputs.skip != 'true'
+        id: rerun
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+          API_AUTH_USERNAME: ${{ secrets.API_AUTH_USERNAME }}
+          API_AUTH_PASSWORD: ${{ secrets.API_AUTH_PASSWORD }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_LOG_VERBOSE: false
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'smoke' }}"
+          BROWSER="${{ matrix.browser }}"
+          TARGET_ENV="${{ github.event.inputs.environment || 'qa' }}"
+
+          MVN_ARGS="-Denvironment=$TARGET_ENV -Dbrowser=$BROWSER -Dheadless=true \
+            -Dbdd.rerun.enabled=true \
+            -Dtestng.suite.name=testng-bdd-rerun.xml \
+            -Dallure.results.directory=target/allure-results-rerun"
+
+          if [ "$SUITE" = "default" ]; then
+            mvn test $MVN_ARGS
+          else
+            mvn test -P$SUITE $MVN_ARGS
+          fi
+        continue-on-error: true
+
+      - name: Generate rerun Allure report
+        if: always() && steps.rerun_check.outputs.skip != 'true'
+        run: |
+          mvn allure:report \
+            -DresultsDirectory=target/allure-results-rerun \
+            -DreportDirectory=target/site/allure-rerun-report
+
+      - name: Upload rerun Allure report
+        if: always() && steps.rerun_check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-rerun
+          path: target/site/allure-rerun-report/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload rerun Cucumber report
+        if: always() && steps.rerun_check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-rerun
+          path: target/cucumber-reports/rerun-cucumber.html
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload rerun logs
+        if: always() && steps.rerun_check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-rerun
+          path: logs/
+          if-no-files-found: warn
+          retention-days: 15
+
+      - name: Fail job if rerun tests failed
+        if: steps.rerun_check.outputs.skip != 'true' && steps.rerun.outcome == 'failure'
+        run: exit 1
+
+  # ═══════════════════════════════════════════════════════════════
+  #         JOB 3 — PUBLISH PRIMARY ALLURE (GitHub Pages)
+  # ═══════════════════════════════════════════════════════════════
+  publish-report:
+    name: Publish Allure Report
+    needs: test
+    if: always() && github.ref == 'refs/heads/main' && needs.test.result != 'cancelled'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Download primary Allure report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-primary
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+          keep_files: false

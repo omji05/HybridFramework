@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EventHub Event Response",
+  "type": "object",
+  "required": ["success", "data"],
+  "properties": {
+    "success": { "type": "boolean" },
+    "data": {
+      "type": "object",
+      "required": ["id", "title", "category", "venue", "city", "eventDate", "price", "totalSeats"],
+      "properties": {
+        "id": { "type": "integer" },
+        "title": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "category": { "type": "string" },
+        "venue": { "type": "string" },
+        "city": { "type": "string" },
+        "eventDate": { "type": "string" },
+        "price": { "type": ["number", "string"] },
+        "totalSeats": { "type": "integer" },
+        "availableSeats": { "type": "integer" }
+      }
+    },
+    "message": { "type": "string" }
+  }
+}

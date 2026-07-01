@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hybrid</groupId>
+    <artifactId>hybrid-automation-framework</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Hybrid Automation Framework</name>
+    <description>
+        Industry-level Hybrid Automation Framework for UI and API testing.
+        Supports Selenium 4, Rest Assured, Cucumber BDD, TestNG with
+        Extent Reports and Allure Reports integration.
+    </description>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--                      VERSION CATALOGUE                         -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+
+        <!-- Core -->
+        <selenium.version>4.40.0</selenium.version>
+        <testng.version>7.10.2</testng.version>
+        <webdrivermanager.version>5.9.2</webdrivermanager.version>
+
+        <!-- BDD -->
+        <cucumber.version>7.20.1</cucumber.version>
+
+        <!-- API -->
+        <rest-assured.version>5.5.0</rest-assured.version>
+        <jackson.version>2.18.2</jackson.version>
+
+        <!-- Reporting -->
+        <extentreports.version>5.1.2</extentreports.version>
+        <allure.version>2.29.1</allure.version>
+        <allure-maven.version>2.14.0</allure-maven.version>
+        <aspectj.version>1.9.25.1</aspectj.version>
+
+        <!-- Logging -->
+        <log4j2.version>2.24.3</log4j2.version>
+
+        <!-- Data -->
+        <poi.version>5.3.0</poi.version>
+        <opencsv.version>5.9</opencsv.version>
+        <datafaker.version>2.4.2</datafaker.version>
+
+        <!-- Database -->
+        <mysql.version>8.4.0</mysql.version>
+
+        <!-- Utilities -->
+        <lombok.version>1.18.42</lombok.version>
+        <commons-codec.version>1.17.1</commons-codec.version>
+        <json-path.version>2.9.0</json-path.version>
+        <wiremock.version>3.9.1</wiremock.version>
+
+        <!-- Plugin versions -->
+        <surefire.version>3.5.2</surefire.version>
+        <failsafe.version>3.5.2</failsafe.version>
+        <compiler.version>3.13.0</compiler.version>
+
+        <!-- BDD suite (Cucumber via TestNG runner) -->
+        <testng.suite.name>testng-bdd.xml</testng.suite.name>
+        <testng.suite.file>${project.build.testOutputDirectory}/${testng.suite.name}</testng.suite.file>
+
+        <!--
+            Cucumber tag filter input.
+
+            This is a Maven-side property that gets mapped to the
+            official Cucumber system property `cucumber.filter.tags`
+            (see surefire <systemPropertyVariables> below).
+
+            Override per profile, or from the CLI via:
+                -Dbdd.tags="@smoke"
+                -Dbdd.tags="@smoke and not @wip"
+
+            You may also bypass this property entirely and pass the
+            Cucumber property directly:
+                -Dcucumber.filter.tags="@smoke"
+        -->
+        <bdd.tags></bdd.tags>
+        <wiremock.enabled>false</wiremock.enabled>
+    </properties>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--                        DEPENDENCIES                            -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <dependencies>
+
+        <!-- ──────────── Selenium ──────────── -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        <!-- ──────────── TestNG ──────────── -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
+        <!-- ──────────── Cucumber BDD ──────────── -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+
+        <!-- ──────────── Rest Assured ──────────── -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${rest-assured.version}</version>
+        </dependency>
+
+        <!-- ──────────── Jackson (Serialization/Deserialization) ──────────── -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- ──────────── Extent Reports ──────────── -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extentreports.version}</version>
+        </dependency>
+
+        <!-- ──────────── Allure ──────────── -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+
+        <!-- ──────────── Log4j2 ──────────── -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+
+        <!-- ──────────── Apache POI (Excel) ──────────── -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
+        <!-- ──────────── OpenCSV ──────────── -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>${datafaker.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ──────────── Database (JDBC) ──────────── -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <!-- ──────────── Utilities ──────────── -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
+        </dependency>
+
+        <!-- ──────────── WireMock (API stubbing for @wiremock scenarios) ──────────── -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--                        BUILD PLUGINS                           -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <build>
+        <testResources>
+            <!-- Filter TestNG suites so thread-count comes from config.properties (override: -Dparallel.thread.count=N) -->
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>testng*.xml</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>testng*.xml</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+
+        <plugins>
+
+            <!-- Load config.properties into Maven properties (CLI -D overrides file values) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.basedir}/src/test/resources/config.properties</file>
+                            </files>
+                            <quiet>true</quiet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Compiler Plugin – Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.version}</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <encoding>UTF-8</encoding>
+                    <proc>full</proc>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire Plugin – BDD (Cucumber + TestNG runner) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${testng.suite.file}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <cucumber.filter.tags>${bdd.tags}</cucumber.filter.tags>
+                        <wiremock.enabled>${wiremock.enabled}</wiremock.enabled>
+                    </systemPropertyVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Failsafe Plugin – Integration Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.version}</version>
+                <configuration>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Allure Maven Plugin -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+                <configuration>
+                    <reportVersion>2.34.1</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--                          PROFILES                              -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--                                                                 -->
+    <!--  All profiles run Cucumber BDD scenarios via testng-bdd.xml.    -->
+    <!--                                                                 -->
+    <!--  ┌───────────────┬──────────────────────────────────────────┐   -->
+    <!--  │  (default)    │  mvn test — all scenarios               │   -->
+    <!--  │  -Psmoke      │  mvn test -Psmoke (@smoke tag)          │   -->
+    <!--  │  -Pregression │  mvn test -Pregression (@regression)    │   -->
+    <!--  │  -Papi        │  mvn test -Papi (@api tag)              │   -->
+    <!--  │  -Pmock       │  mvn test -Pmock (@wiremock tag)        │   -->
+    <!--  │  Custom tags  │  mvn test -Dbdd.tags="@ui and @smoke"   │   -->
+    <!--  └───────────────┴──────────────────────────────────────────┘   -->
+    <!--                                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <profiles>
+
+        <!-- Smoke — Cucumber scenarios tagged @smoke -->
+        <profile>
+            <id>smoke</id>
+            <properties>
+                <bdd.tags>@smoke</bdd.tags>
+            </properties>
+        </profile>
+
+        <!-- Regression — Cucumber scenarios tagged @regression -->
+        <profile>
+            <id>regression</id>
+            <properties>
+                <bdd.tags>@regression</bdd.tags>
+            </properties>
+        </profile>
+
+        <!-- API-only — Cucumber scenarios tagged @api -->
+        <profile>
+            <id>api</id>
+            <properties>
+                <bdd.tags>@api</bdd.tags>
+            </properties>
+        </profile>
+
+        <!-- WireMock — Cucumber scenarios tagged @wiremock (parallel-safe, file stubs only) -->
+        <profile>
+            <id>mock</id>
+            <properties>
+                <bdd.tags>@wiremock</bdd.tags>
+                <wiremock.enabled>true</wiremock.enabled>
+            </properties>
+        </profile>
+
+    </profiles>
+
+</project>

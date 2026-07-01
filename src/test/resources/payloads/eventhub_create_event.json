@@ -1,0 +1,10 @@
+{
+  "title": "API Test Event",
+  "description": "Automated API test event",
+  "category": "Conference",
+  "venue": "Test Venue",
+  "city": "Mumbai",
+  "eventDate": "2026-12-15T09:00:00.000Z",
+  "price": 500,
+  "totalSeats": 100
+}

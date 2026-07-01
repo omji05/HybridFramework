@@ -1,0 +1,10 @@
+{
+  "article": {
+    "title": "Demo Arcticle",
+    "description": "Use of article for generating content",
+    "body": "Claude is getting importance rapidly due to the accuracy of code generation",
+    "tagList": [
+      "ai"
+    ]
+  }
+}

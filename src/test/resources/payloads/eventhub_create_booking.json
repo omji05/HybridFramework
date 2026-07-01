@@ -1,0 +1,7 @@
+{
+  "eventId": 1,
+  "customerName": "Test User",
+  "customerEmail": "book@test.com",
+  "customerPhone": "+91-9876543210",
+  "quantity": 1
+}

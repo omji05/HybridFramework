@@ -1,0 +1,112 @@
+{
+  "requestId": "req-template-001",
+  "version": 1,
+  "amount": 1299.99,
+  "retryCount": 0,
+  "isActive": true,
+  "notes": "temp notes",
+  "description": "",
+  "metadata": {},
+  "tags": [
+    "api",
+    "regression",
+    "template"
+  ],
+  "scores": [
+    4.5,
+    4.8,
+    5.0
+  ],
+  "flags": [
+    true,
+    false
+  ],
+  "emptyList": [],
+  "customer": {
+    "id": "cust-100",
+    "profile": {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane.doe@example.com",
+      "phone": ""
+    },
+    "preferences": {
+      "newsletter": true,
+      "language": "en",
+      "channels": [
+        "email",
+        "sms"
+      ]
+    }
+  },
+  "billingAddress": {
+    "line1": "123 Main Street",
+    "line2": "Apt 4B",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "IN",
+    "postalCode": "560001"
+  },
+  "shippingAddresses": [
+    {
+      "label": "home",
+      "line1": "123 Main Street",
+      "city": "Bangalore",
+      "isDefault": true
+    },
+    {
+      "label": "office",
+      "line1": "456 Tech Park Road",
+      "city": "Bangalore",
+      "isDefault": false
+    }
+  ],
+  "orders": [
+    {
+      "orderId": "ord-001",
+      "status": "draft",
+      "items": [
+        {
+          "sku": "SKU-001",
+          "name": "Widget",
+          "quantity": 2,
+          "unitPrice": 499.99,
+          "attributes": {
+            "color": "red",
+            "size": "M"
+          }
+        },
+        {
+          "sku": "SKU-002",
+          "name": "Gadget",
+          "quantity": 1,
+          "unitPrice": 799.99,
+          "attributes": {
+            "color": "blue",
+            "size": null
+          }
+        }
+      ],
+      "totals": {
+        "subtotal": 1799.97,
+        "tax": 180.0,
+        "grandTotal": 1979.97
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "fileName": "invoice.pdf",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1024
+    }
+  ],
+  "audit": {
+    "createdAt": "2026-06-05T10:00:00Z",
+    "createdBy": "automation",
+    "source": {
+      "system": "hybrid-framework",
+      "environment": "test"
+    }
+  }
+}
