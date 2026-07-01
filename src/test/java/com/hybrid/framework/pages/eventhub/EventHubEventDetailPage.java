@@ -4,6 +4,7 @@ import com.hybrid.framework.pages.BasePage;
 import com.hybrid.framework.testdata.EventHubAttendeeData;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 
 /**
  * Event detail and ticket booking page ({@code /events/{id}}).
@@ -20,10 +21,15 @@ public class EventHubEventDetailPage extends BasePage {
 
     @Step("Verify booking details form is displayed")
     public boolean isBookingFormDisplayed() {
-        return getCurrentUrl().contains("/events/")
-                && isDisplayed(bookTicketsHeading)
-                && isDisplayed(customerNameField)
-                && isDisplayed(confirmBookingBtn);
+        try {
+            waitUtils.waitForUrlContains("/events/");
+            waitUtils.waitForVisible(bookTicketsHeading);
+            waitUtils.waitForVisible(customerNameField);
+            waitUtils.waitForVisible(confirmBookingBtn);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 
     @Step("Fill attendee booking details")

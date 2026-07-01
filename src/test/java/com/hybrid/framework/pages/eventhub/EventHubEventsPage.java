@@ -62,7 +62,7 @@ public class EventHubEventsPage extends BasePage {
                 .scrollToElement(bookButton)
                 .perform();
         bookButton.click();
-        waitUtils.waitForPageLoad();
+        waitUtils.waitForUrlContains("/events/");
         return new EventHubEventDetailPage();
     }
 
