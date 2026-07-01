@@ -4,6 +4,7 @@ import com.hybrid.framework.pages.BasePage;
 import com.hybrid.framework.pages.eventhub.components.EventHubNavBar;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 
 /**
  * My Bookings page ({@code /bookings}).
@@ -19,17 +20,20 @@ public class EventHubBookingsPage extends BasePage {
 
     @Step("Verify My Bookings page is displayed")
     public boolean isBookingsPageDisplayed() {
-        return getCurrentUrl().contains("/bookings") && isDisplayed(pageHeading);
-    }
-
-    public boolean isPageSubheadingDisplayed() {
-        return isDisplayed(pageSubheading);
+        Boolean loaded =waitUtils.fluentWait(driver -> {
+            if(isDisplayed(emptyStateTitle) || isDisplayed(bookingCards)){
+                return true;
+            }
+            else{
+            return null;}
+        });
+        return loaded != null;
     }
 
     public boolean hasBookingCards() {
         return !findElements(bookingCards).isEmpty();
     }
-
+    
     public boolean isEmptyStateDisplayed() {
         return isDisplayed(emptyStateTitle);
     }

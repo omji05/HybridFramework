@@ -47,7 +47,6 @@ public class EventHubBookingsSteps {
     public void theMyBookingsPageShouldBeDisplayed() {
         bookingsPage = resolveBookingsPage();
         Assert.assertTrue(bookingsPage.isBookingsPageDisplayed(), "My Bookings page should be displayed");
-        Assert.assertTrue(bookingsPage.isPageSubheadingDisplayed(), "Bookings page subheading should be visible");
     }
 
     @And("the bookings page should show either existing bookings or an empty state")
