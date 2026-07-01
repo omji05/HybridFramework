@@ -17,11 +17,12 @@ public class EventHubBookingsPage extends BasePage {
     private final By browseEventsLink  = By.xpath("//a[contains(@href,'/events') and contains(.,'Browse Events')]");
     private final By bookingCards      = By.cssSelector("[data-testid='booking-card']");
     private final By clearAllButton    = By.xpath("//button[contains(.,'Clear all bookings')]");
+    private final By cancelBookingButton    = By.cssSelector("[data-testid='cancel-booking-btn']");
 
     @Step("Verify My Bookings page is displayed")
     public boolean isBookingsPageDisplayed() {
         Boolean loaded =waitUtils.fluentWait(driver -> {
-            if(isDisplayed(emptyStateTitle) || isDisplayed(bookingCards)){
+            if(isDisplayed(emptyStateTitle) || isDisplayed(cancelBookingButton)){
                 return true;
             }
             else{
