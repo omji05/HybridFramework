@@ -7,7 +7,7 @@ Feature: EventHub My Bookings
   Background:
     Given the user is signed in to EventHub
 
-  @smoke @BOOKINGS-001
+  @smoke @BOOKINGS-001 @P0
   Scenario: My Bookings page loads for a signed-in user
     When the user navigates to the My Bookings page
     Then the My Bookings page should be displayed

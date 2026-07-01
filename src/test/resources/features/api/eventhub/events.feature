@@ -7,7 +7,7 @@ Feature: EventHub API - Events
   Background:
     Given I am authenticated on EventHub using the "eventhub_login.json" payload
 
-  @smoke @events @EH-API-003
+  @smoke @events @EH-API-003 @P0
   Scenario: Retrieve all events
     When I fetch all EventHub events
     Then the response status code should be 200

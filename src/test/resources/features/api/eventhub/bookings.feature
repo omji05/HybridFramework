@@ -7,7 +7,7 @@ Feature: EventHub API - Bookings
   Background:
     Given I am authenticated on EventHub using the "eventhub_login.json" payload
 
-  @regression @bookings @EH-API-005
+  @regression @bookings @EH-API-005 @P1
   Scenario: Retrieve all bookings
     When I fetch all EventHub bookings
     Then the response status code should be 200

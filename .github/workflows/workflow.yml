@@ -1,0 +1,210 @@
+name: Priority Shard CI
+
+on:
+  # push:
+  #   branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser (chrome, firefox, edge)'
+        required: false
+        default: 'chrome'
+      environment:
+        description: 'Target environment (qa, staging)'
+        required: false
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - staging
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  #         JOB 1 — PRIORITY SHARDS (P0 / P1 / P2)
+  # ═══════════════════════════════════════════════════════════════
+  test:
+    name: Shard (@${{ matrix.priority }} / ${{ github.event.inputs.environment || 'qa' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        priority: [ P0, P1, P2 ]
+        browser: [ chrome ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Chrome
+        if: matrix.browser == 'chrome'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 'stable'
+
+      - name: Run priority shard
+        id: primary
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+          API_AUTH_USERNAME: ${{ secrets.API_AUTH_USERNAME }}
+          API_AUTH_PASSWORD: ${{ secrets.API_AUTH_PASSWORD }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_LOG_VERBOSE: false
+        run: |
+          BROWSER="${{ matrix.browser }}"
+          TARGET_ENV="${{ github.event.inputs.environment || 'qa' }}"
+          PRIORITY="${{ matrix.priority }}"
+
+          mvn clean test \
+            -Denvironment="$TARGET_ENV" \
+            -Dbrowser="$BROWSER" \
+            -Dheadless=true \
+            -Dbdd.rerun.enabled=false \
+            -Dtestng.suite.name=testng-bdd-primary.xml \
+            -Dbdd.tags="@${PRIORITY}"
+        continue-on-error: true
+
+      - name: Load Allure history from gh-pages
+        if: always()
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Preserve Allure history (shard report)
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          if [ -d gh-pages/history ]; then
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
+      - name: Generate shard Allure report
+        if: always()
+        run: mvn allure:report
+
+      - name: Upload shard Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ matrix.priority }}
+          path: target/site/allure-maven-plugin/
+          retention-days: 30
+
+      - name: Upload shard Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.priority }}
+          path: target/allure-results/
+          retention-days: 30
+
+      - name: Upload shard Cucumber report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-${{ matrix.priority }}
+          path: target/cucumber-reports/cucumber.html
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-${{ matrix.priority }}
+          path: target/reports/screenshots/
+          if-no-files-found: ignore
+          retention-days: 15
+
+      - name: Upload shard logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.priority }}
+          path: logs/
+          if-no-files-found: warn
+          retention-days: 15
+
+      - name: Fail job if shard tests failed
+        if: steps.primary.outcome == 'failure'
+        run: exit 1
+
+  # ═══════════════════════════════════════════════════════════════
+  #    JOB 2 — MERGE SHARDS & PUBLISH ALLURE (GitHub Pages)
+  # ═══════════════════════════════════════════════════════════════
+  publish-report:
+    name: Publish Merged Allure Report
+    needs: test
+    if: always() && github.ref == 'refs/heads/main' && needs.test.result != 'cancelled'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Download Allure results from all shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          merge-multiple: true
+          path: target/allure-results
+
+      - name: Load Allure history from gh-pages
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Preserve Allure history (merged report)
+        run: |
+          mkdir -p target/allure-results/history
+          if [ -d gh-pages/history ]; then
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
+      - name: Generate merged Allure report
+        run: mvn allure:report
+
+      - name: Upload merged Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-merged
+          path: target/site/allure-maven-plugin/
+          retention-days: 15
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/site/allure-maven-plugin
+          keep_files: false

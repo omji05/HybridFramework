@@ -4,7 +4,7 @@ Feature: EventHub API - Authentication
   I want to register and authenticate via the REST API
   So that I can obtain a JWT for protected EventHub operations
 
-  @smoke @registration @EH-API-001
+  @smoke @registration @EH-API-001 @P0
   Scenario: Successfully register a new user
     When I register a new EventHub user using the "eventhub_register.json" payload
     Then the response status code should be 201

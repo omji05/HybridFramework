@@ -9,7 +9,7 @@ Feature: EventHub User Sign In
 
   # ── Happy Path ───────────────────────────────────────────────────────────
 
-  @smoke @LOGIN-001
+  @smoke @LOGIN-001 @P0
   Scenario: A registered user can sign in with valid credentials
     When the user authenticates with valid registered credentials
     Then the user should land on the home page in an authenticated state
@@ -17,19 +17,19 @@ Feature: EventHub User Sign In
 
   # ── Negative — Credential Validation ─────────────────────────────────────
 
-  @regression @negative @LOGIN-002
+  @regression @negative @LOGIN-002 @P0
   Scenario: Sign in is denied for an unregistered email address
     When the user attempts to authenticate with email "ghost@notregistered.io" and password "WrongPass1"
     Then the sign in form should display an authentication failure message
     And the user should remain on the sign in page
 
-  @regression @negative @LOGIN-003
+  @regression @negative @LOGIN-003 @P1
   Scenario: Sign in is denied when the correct email is paired with a wrong password
     When the user attempts to authenticate with the registered email and an incorrect password
     Then the sign in form should display an authentication failure message
     And the user should remain on the sign in page
 
-  @regression @negative @LOGIN-004
+  @regression @negative @LOGIN-004 @P2
   Scenario Outline: Sign in requires both email and password to be present
     When the user attempts to authenticate with email "<email>" and password "<password>"
     Then the user should not be granted access to the home page
@@ -39,7 +39,7 @@ Feature: EventHub User Sign In
       |       | Passw0rd! |
       |       |           |
 
-  @regression @negative @LOGIN-004b
+  @regression @negative @LOGIN-004b @P1
   Scenario: Sign in is denied when the registered email is submitted without a password
     When the user attempts to authenticate with the registered email and a blank password
     Then the user should not be granted access to the home page
