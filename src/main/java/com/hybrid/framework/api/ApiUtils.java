@@ -174,7 +174,6 @@ public final class ApiUtils {
                 .setBaseUri(config.getApiBaseUri())
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-                .addHeader("user-agent", "hybrid-bdd")
                 .addFilter(new AllureRestAssured())
                 .log(requestLogDetail());
 

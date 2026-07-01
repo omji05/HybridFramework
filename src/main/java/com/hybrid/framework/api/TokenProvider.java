@@ -41,7 +41,7 @@ public final class TokenProvider {
             throw new IllegalStateException("api.auth.password must be set (e.g. API_AUTH_PASSWORD in CI)");
         }
 
-        Map<String, String> body = Map.of("username", username, "password", password);
+        Map<String, String> body = Map.of("email", username, "password", password);
         int expectedStatus = config.getApiAuthTokenExpectedStatus();
 
         LOG.info("Requesting JWT from {}", tokenPath);
@@ -79,7 +79,6 @@ public final class TokenProvider {
                 .setBaseUri(config.getApiBaseUri())
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-                .addHeader("user-agent", "hybrid-bdd")
                 .addFilter(new AllureRestAssured())
                 .log(config.getBoolean("api.log.verbose", true) ? LogDetail.ALL : LogDetail.URI);
 
