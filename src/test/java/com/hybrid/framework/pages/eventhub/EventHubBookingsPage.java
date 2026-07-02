@@ -46,7 +46,7 @@ public class EventHubBookingsPage extends BasePage {
     @Step("Open Events page from bookings empty state")
     public EventHubEventsPage browseEventsFromEmptyState() {
         scrollToElement(browseEventsLink);
-        click(browseEventsLink);
+        jsClick(browseEventsLink);
         waitUtils.waitForPageLoad();
         return new EventHubEventsPage();
     }

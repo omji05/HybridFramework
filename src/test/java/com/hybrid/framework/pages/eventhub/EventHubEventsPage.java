@@ -42,8 +42,7 @@ public class EventHubEventsPage extends BasePage {
     @Step("Open admin events page via Add New Event link")
     public EventHubAdminEventsPage openAddNewEvent() {
         scrollToElement(addNewEventLink);
-        WebElement link = waitUtils.waitForClickable(addNewEventLink);
-        jsClick(link);
+        jsClick(addNewEventLink);
         waitUtils.waitForPageLoad();
         return new EventHubAdminEventsPage();
     }

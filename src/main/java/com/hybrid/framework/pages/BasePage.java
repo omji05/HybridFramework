@@ -195,11 +195,31 @@ public abstract class BasePage {
     }
 
     /**
+     * Moves to an element.
+     */
+    protected void moveToElement(By locator) {
+        new Actions(getDriver())
+                .moveToElement(waitUtils.waitForPresence(locator))
+                .perform();
+        log.debug("Moved to element: {}", locator);
+    }
+
+    /**
      * Clicks an element using JavaScript (for elements intercepted by overlays).
      */
     protected void jsClick(WebElement element) {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", element);
         log.debug("JS-clicked element: {}", describeElement(element));
+    }
+
+    /**
+     * Clicks an element located by a By locator using JavaScript.
+     * Resolves the element at click time to reduce stale-reference risk.
+     */
+    protected void jsClick(By locator) {
+        WebElement element = waitUtils.waitForClickable(locator);
+        jsClick(element);
+        log.debug("JS-clicked element: {}", locator);
     }
 
     /**
