@@ -34,9 +34,8 @@ jobs:
 
       - name: Start Selenium Grid (hub + Chrome node)
         env:
-          # Runner-level proxy can break in-container hub health checks
+          # Runner-level proxy can break in-container hub health checks (GHA env keys are case-insensitive)
           NO_PROXY: localhost,127.0.0.1,selenium-hub,node-chrome
-          no_proxy: localhost,127.0.0.1,selenium-hub,node-chrome
         run: |
           docker compose up -d
 
