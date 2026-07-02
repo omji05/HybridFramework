@@ -1,73 +1,43 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
 "  In order to discover events quickly
   As a signed-in EventHub user
-  I want to use the home page to explore the application","21123","User can navigate to Events from the home page","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:02 UTC 2026","","EventHub Home Page","User can navigate to Events from the home page",""
-"  In order to find and manage events
+  I want to use the home page to explore the application","23560","A signed-in user can sign out and return to the login page","","Thu Jul 02 16:59:29 UTC 2026","passed","Thu Jul 02 16:59:53 UTC 2026","","EventHub Home Page","A signed-in user can sign out and return to the login page",""
+"  As a test engineer
+  I want to stub the login API in-process
+  So that tests run reliably in CI without hitting the real backend","907","Invalid login returns 401 file based stub","","Thu Jul 02 16:59:28 UTC 2026","broken","Thu Jul 02 16:59:29 UTC 2026","","Login via WireMock file-based stub","Invalid login returns 401 file based stub",""
+"  In order to discover events quickly
   As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","21676","User can search the events listing","","Thu Jul 02 04:53:41 UTC 2026","passed","Thu Jul 02 04:54:02 UTC 2026","","EventHub Events Discovery and Creation","User can search the events listing",""
+  I want to use the home page to explore the application","27860","Home page displays hero content and featured events","","Thu Jul 02 16:59:28 UTC 2026","passed","Thu Jul 02 16:59:56 UTC 2026","","EventHub Home Page","Home page displays hero content and featured events",""
 "  In order to discover and book events
   As a registered EventHub user
-  I want to securely sign in to my account","30965","Sign in requires both email and password to be present","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:11 UTC 2026","","EventHub User Sign In","Sign in requires both email and password to be present",""
-"  In order to review ticket purchases
+  I want to securely sign in to my account","36952","A registered user can sign in with valid credentials","","Thu Jul 02 16:59:36 UTC 2026","passed","Thu Jul 02 17:00:13 UTC 2026","","EventHub User Sign In","A registered user can sign in with valid credentials",""
+"  In order to discover events quickly
   As a signed-in EventHub user
-  I want to view and manage my bookings","27258","User can open events from the bookings page","","Thu Jul 02 04:53:40 UTC 2026","broken","Thu Jul 02 04:54:08 UTC 2026","","EventHub My Bookings","User can open events from the bookings page",""
+  I want to use the home page to explore the application","32008","User can navigate to Events from the home page","","Thu Jul 02 16:59:29 UTC 2026","passed","Thu Jul 02 17:00:01 UTC 2026","","EventHub Home Page","User can navigate to Events from the home page",""
 "  In order to discover and book events
   As a registered EventHub user
-  I want to securely sign in to my account","30692","Sign in requires both email and password to be present","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:11 UTC 2026","","EventHub User Sign In","Sign in requires both email and password to be present",""
+  I want to securely sign in to my account","37417","A failed authentication attempt does not establish a session","","Thu Jul 02 16:59:37 UTC 2026","passed","Thu Jul 02 17:00:14 UTC 2026","","EventHub User Sign In","A failed authentication attempt does not establish a session",""
 "  In order to find and manage events
   As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","30225","User can fill new event details on the admin form","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:11 UTC 2026","","EventHub Events Discovery and Creation","User can fill new event details on the admin form",""
-"  In order to find and manage events
-  As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","24412","User can move from events page to the new event form","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:09 UTC 2026","","EventHub Events Discovery and Creation","User can move from events page to the new event form",""
-"  In order to find and manage events
-  As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","30246","User can fill attendee details on the booking form","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:10 UTC 2026","","EventHub Events Discovery and Creation","User can fill attendee details on the booking form",""
+  I want to browse events, start bookings, and create new events","16405","Events listing page displays upcoming events","","Thu Jul 02 16:59:28 UTC 2026","passed","Thu Jul 02 16:59:45 UTC 2026","","EventHub Events Discovery and Creation","Events listing page displays upcoming events",""
 "  As an EventHub platform user
   I want to register and authenticate via the REST API
-  So that I can obtain a JWT for protected EventHub operations","6601","Successfully register a new user","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:53:47 UTC 2026","","EventHub API - Authentication","Successfully register a new user",""
+  So that I can obtain a JWT for protected EventHub operations","7833","Successfully register a new user","","Thu Jul 02 16:59:28 UTC 2026","passed","Thu Jul 02 16:59:36 UTC 2026","","EventHub API - Authentication","Successfully register a new user",""
 "  In order to review ticket purchases
   As a signed-in EventHub user
-  I want to view and manage my bookings","31239","My Bookings page loads for a signed-in user","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:12 UTC 2026","","EventHub My Bookings","My Bookings page loads for a signed-in user",""
-"  As an authenticated EventHub user
-  I want to list and create bookings via the REST API
-  So that I can validate ticket purchase and retrieval flows","7144","Retrieve all bookings","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:53:52 UTC 2026","","EventHub API - Bookings","Retrieve all bookings",""
-"  In order to discover and book events
-  As a registered EventHub user
-  I want to securely sign in to my account","27830","Sign in is denied when the registered email is submitted without a password","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:12 UTC 2026","","EventHub User Sign In","Sign in is denied when the registered email is submitted without a password",""
+  I want to view and manage my bookings","39907","My Bookings page loads for a signed-in user","","Thu Jul 02 16:59:28 UTC 2026","passed","Thu Jul 02 17:00:08 UTC 2026","","EventHub My Bookings","My Bookings page loads for a signed-in user",""
 "  As an authenticated EventHub user
   I want to list and create events via the REST API
-  So that I can manage the event catalogue in my sandbox","6763","Retrieve all events","","Thu Jul 02 04:53:41 UTC 2026","passed","Thu Jul 02 04:53:47 UTC 2026","","EventHub API - Events","Retrieve all events",""
-"  In order to discover events quickly
-  As a signed-in EventHub user
-  I want to use the home page to explore the application","37478","A signed-in user can sign out and return to the login page","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:18 UTC 2026","","EventHub Home Page","A signed-in user can sign out and return to the login page",""
-"  In order to discover events quickly
-  As a signed-in EventHub user
-  I want to use the home page to explore the application","24340","Navigation bar exposes primary application sections","","Thu Jul 02 04:53:44 UTC 2026","passed","Thu Jul 02 04:54:08 UTC 2026","","EventHub Home Page","Navigation bar exposes primary application sections",""
-"  In order to discover events quickly
-  As a signed-in EventHub user
-  I want to use the home page to explore the application","32903","User can navigate to My Bookings from the home page","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:17 UTC 2026","","EventHub Home Page","User can navigate to My Bookings from the home page",""
-"  In order to discover and book events
-  As a registered EventHub user
-  I want to securely sign in to my account","19207","Sign in is denied for an unregistered email address","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:00 UTC 2026","","EventHub User Sign In","Sign in is denied for an unregistered email address",""
-"  In order to review ticket purchases
-  As a signed-in EventHub user
-  I want to view and manage my bookings","36756","Existing bookings expose management controls","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:17 UTC 2026","","EventHub My Bookings","Existing bookings expose management controls",""
-"  In order to review ticket purchases
-  As a signed-in EventHub user
-  I want to view and manage my bookings","33133","Bookings page provides a path to browse events","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:18 UTC 2026","","EventHub My Bookings","Bookings page provides a path to browse events",""
-"  In order to discover and book events
-  As a registered EventHub user
-  I want to securely sign in to my account","19948","Sign in is denied when the correct email is paired with a wrong password","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:04 UTC 2026","","EventHub User Sign In","Sign in is denied when the correct email is paired with a wrong password",""
+  So that I can manage the event catalogue in my sandbox","8531","Retrieve all events","","Thu Jul 02 16:59:28 UTC 2026","passed","Thu Jul 02 16:59:37 UTC 2026","","EventHub API - Events","Retrieve all events",""
 "  In order to find and manage events
   As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","21754","Events listing page displays upcoming events","","Thu Jul 02 04:53:41 UTC 2026","passed","Thu Jul 02 04:54:02 UTC 2026","","EventHub Events Discovery and Creation","Events listing page displays upcoming events",""
+  I want to browse events, start bookings, and create new events","10735","Book Now opens the event booking details form","","Thu Jul 02 16:59:29 UTC 2026","passed","Thu Jul 02 16:59:39 UTC 2026","","EventHub Events Discovery and Creation","Book Now opens the event booking details form",""
 "  In order to discover events quickly
   As a signed-in EventHub user
-  I want to use the home page to explore the application","21767","Home page displays hero content and featured events","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:02 UTC 2026","","EventHub Home Page","Home page displays hero content and featured events",""
+  I want to use the home page to explore the application","8148","Navigation bar exposes primary application sections","","Thu Jul 02 16:59:29 UTC 2026","passed","Thu Jul 02 16:59:37 UTC 2026","","EventHub Home Page","Navigation bar exposes primary application sections",""
 "  In order to find and manage events
   As a signed-in EventHub user
-  I want to browse events, start bookings, and create new events","25562","Book Now opens the event booking details form","","Thu Jul 02 04:53:45 UTC 2026","passed","Thu Jul 02 04:54:10 UTC 2026","","EventHub Events Discovery and Creation","Book Now opens the event booking details form",""
-"  In order to discover and book events
-  As a registered EventHub user
-  I want to securely sign in to my account","20795","A registered user can sign in with valid credentials","","Thu Jul 02 04:53:40 UTC 2026","passed","Thu Jul 02 04:54:01 UTC 2026","","EventHub User Sign In","A registered user can sign in with valid credentials",""
+  I want to browse events, start bookings, and create new events","22300","User can move from events page to the new event form","","Thu Jul 02 16:59:29 UTC 2026","failed","Thu Jul 02 16:59:51 UTC 2026","","EventHub Events Discovery and Creation","User can move from events page to the new event form",""
+"  As a test engineer
+  I want to stub the login API in-process
+  So that tests run reliably in CI without hitting the real backend","877","Login returns stubbed token","","Thu Jul 02 16:59:28 UTC 2026","broken","Thu Jul 02 16:59:29 UTC 2026","","Login via WireMock file-based stub","Login returns stubbed token",""
