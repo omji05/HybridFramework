@@ -1,0 +1,28 @@
+# Selenium 4 Grid — hub + Chrome node (used by .github/workflows/docker-grid-ci.yml)
+name: selenium-grid
+
+services:
+  selenium-hub:
+    image: selenium/hub:${SELENIUM_VERSION:-4.27.0}
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    healthcheck:
+      test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  node-chrome:
+    image: selenium/node-chrome:${SELENIUM_VERSION:-4.27.0}
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: "4442"
+      SE_EVENT_BUS_SUBSCRIBE_PORT: "4443"
+    shm_size: "2gb"

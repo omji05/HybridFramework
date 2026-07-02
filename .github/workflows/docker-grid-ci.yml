@@ -1,0 +1,134 @@
+name: Docker Grid CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'BDD suite profile (default, smoke, regression, api, mock)'
+        required: false
+        default: 'smoke'
+      environment:
+        description: 'Target environment (qa, staging)'
+        required: false
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - staging
+
+env:
+  MAVEN_IMAGE: maven:3.9-eclipse-temurin-17
+  SELENIUM_VERSION: '4.27.0'
+  GRID_NETWORK: selenium-grid_default
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  test:
+    name: Grid (${{ github.event.inputs.suite || 'smoke' }} / ${{ github.event.inputs.environment || 'qa' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Start Selenium Grid (hub + Chrome node)
+        run: docker compose up -d --wait
+
+      - name: Run BDD suite via Grid
+        id: primary
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+          API_AUTH_USERNAME: ${{ secrets.API_AUTH_USERNAME }}
+          API_AUTH_PASSWORD: ${{ secrets.API_AUTH_PASSWORD }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'smoke' }}"
+          TARGET_ENV="${{ github.event.inputs.environment || 'qa' }}"
+
+          MVN_ARGS="-Denvironment=$TARGET_ENV -Dbrowser=chrome -Dheadless=true \
+            -Dremote.url=http://selenium-hub:4444 \
+            -Dbdd.rerun.enabled=false \
+            -Dtestng.suite.name=testng-bdd-primary.xml \
+            -Dapi.log.verbose=false"
+
+          if [ "$SUITE" = "default" ]; then
+            TEST_CMD="mvn clean test $MVN_ARGS"
+          else
+            TEST_CMD="mvn clean test -P$SUITE $MVN_ARGS"
+          fi
+
+          docker run --rm \
+            --network "$GRID_NETWORK" \
+            -v "${{ github.workspace }}:/app" \
+            -w /app \
+            -e MAVEN_OPTS \
+            -e API_KEY \
+            -e API_AUTH_USERNAME \
+            -e API_AUTH_PASSWORD \
+            -e TEST_EMAIL \
+            -e TEST_PASSWORD \
+            "$MAVEN_IMAGE" \
+            sh -c "$TEST_CMD"
+        continue-on-error: true
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/app" \
+            -w /app \
+            "$MAVEN_IMAGE" \
+            mvn allure:report
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure-results-grid
+          path: target/allure-results/
+          retention-days: 30
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure-report-grid
+          path: target/site/allure-maven-plugin/
+          retention-days: 30
+
+      # - name: Upload Cucumber report
+      #   if: always()
+      #   uses: actions/upload-artifact@v5
+      #   with:
+      #     name: cucumber-report-grid
+      #     path: target/cucumber-reports/cucumber.html
+      #     if-no-files-found: warn
+      #     retention-days: 30
+
+      # - name: Upload failure screenshots
+      #   if: failure()
+      #   uses: actions/upload-artifact@v5
+      #   with:
+      #     name: failure-screenshots-grid
+      #     path: target/reports/screenshots/
+      #     if-no-files-found: ignore
+      #     retention-days: 15
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-logs-grid
+          path: logs/
+          if-no-files-found: warn
+          retention-days: 15
+
+      - name: Stop Selenium Grid
+        if: always()
+        run: docker compose down -v
+
+      - name: Fail job if tests failed
+        if: steps.primary.outcome == 'failure'
+        run: exit 1

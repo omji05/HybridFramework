@@ -11,7 +11,10 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +23,9 @@ import java.util.Map;
  * Factory pattern for creating browser-specific WebDriver instances.
  * <p>
  * Supports Chrome, Firefox, and Edge. Uses WebDriverManager for automatic
- * driver binary management. Each browser can be launched in headless mode
- * via the {@code headless} configuration property.
+ * driver binary management when {@code remote.url} is unset. When
+ * {@code remote.url} is set, connects to Selenium Grid via {@link RemoteWebDriver}.
+ * Each browser can be launched in headless mode via the {@code headless} property.
  * </p>
  */
 public final class BrowserFactory {
@@ -41,9 +45,17 @@ public final class BrowserFactory {
     public static WebDriver createDriver(String browserName) {
         ConfigReader config = ConfigReader.getInstance();
         boolean headless = config.isHeadless();
-        WebDriver driver;
+        String normalizedBrowser = browserName.trim().toLowerCase();
 
-        switch (browserName.trim().toLowerCase()) {
+        String remoteUrl = config.getProperty("remote.url", "").trim();
+        if (!remoteUrl.isEmpty()) {
+            WebDriver driver = createRemoteDriver(remoteUrl, normalizedBrowser, headless);
+            configureDriver(driver, config);
+            return driver;
+        }
+
+        WebDriver driver;
+        switch (normalizedBrowser) {
             case "chrome": {
                 driver = new ChromeDriver(buildChromeOptions(headless));
                 LOG.info("Chrome browser launched [headless={}]", headless);
@@ -73,6 +85,27 @@ public final class BrowserFactory {
      */
     public static WebDriver createDriver() {
         return createDriver(ConfigReader.getInstance().getBrowser());
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // Remote Grid
+    // ──────────────────────────────────────────────────────────────
+
+    private static WebDriver createRemoteDriver(String remoteUrl, String browserName, boolean headless) {
+        try {
+            URL gridUrl = new URL(remoteUrl);
+            WebDriver driver = switch (browserName) {
+                case "chrome" -> new RemoteWebDriver(gridUrl, buildChromeOptions(headless));
+                case "firefox" -> new RemoteWebDriver(gridUrl, buildFirefoxOptions(headless));
+                case "edge" -> new RemoteWebDriver(gridUrl, buildEdgeOptions(headless));
+                default -> throw new IllegalArgumentException(
+                        "Unsupported browser: " + browserName + ". Supported: chrome, firefox, edge.");
+            };
+            LOG.info("{} browser launched via Selenium Grid [{}]", browserName, remoteUrl);
+            return driver;
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid remote.url: " + remoteUrl, e);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────
