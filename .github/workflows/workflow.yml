@@ -41,10 +41,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
@@ -52,7 +52,7 @@ jobs:
 
       - name: Set up Chrome
         if: matrix.browser == 'chrome'
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: 'stable'
 
@@ -81,7 +81,7 @@ jobs:
 
       - name: Load Allure history from gh-pages
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         continue-on-error: true
         with:
           ref: gh-pages
@@ -101,7 +101,7 @@ jobs:
 
       - name: Upload shard Allure report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-report-${{ matrix.priority }}
           path: target/site/allure-maven-plugin/
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload shard Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-${{ matrix.priority }}
           path: target/allure-results/
@@ -117,7 +117,7 @@ jobs:
 
       - name: Upload shard Cucumber report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cucumber-report-${{ matrix.priority }}
           path: target/cucumber-reports/cucumber.html
@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: failure-screenshots-${{ matrix.priority }}
           path: target/reports/screenshots/
@@ -135,7 +135,7 @@ jobs:
 
       - name: Upload shard logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-logs-${{ matrix.priority }}
           path: logs/
@@ -162,24 +162,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
 
       - name: Download Allure results from all shards
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: allure-results-*
           merge-multiple: true
           path: target/allure-results
 
       - name: Load Allure history from gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         continue-on-error: true
         with:
           ref: gh-pages
@@ -196,14 +196,14 @@ jobs:
         run: mvn allure:report
 
       - name: Upload merged Allure report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-report-merged
           path: target/site/allure-maven-plugin/
           retention-days: 15
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: target/site/allure-maven-plugin

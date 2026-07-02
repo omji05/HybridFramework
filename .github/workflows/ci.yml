@@ -49,17 +49,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
 
       - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: 'stable'
 
@@ -90,7 +90,7 @@ jobs:
 
       - name: Upload rerun list for retry job
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: rerun-txt
           path: target/rerun.txt
@@ -99,7 +99,7 @@ jobs:
 
       - name: Load Allure history from gh-pages
         if: always()
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         continue-on-error: true
         with:
           ref: gh-pages
@@ -119,7 +119,7 @@ jobs:
 
       - name: Upload primary Allure report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-report-primary
           path: target/site/allure-maven-plugin/
@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload primary Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-primary
           path: target/allure-results/
@@ -135,7 +135,7 @@ jobs:
 
       - name: Upload primary Cucumber report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cucumber-report-primary
           path: target/cucumber-reports/cucumber.html
@@ -144,7 +144,7 @@ jobs:
 
       # - name: Upload Extent report
       #   if: always()
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@v5
       #   with:
       #     name: extent-report
       #     path: target/reports/extent/
@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: failure-screenshots
           path: target/reports/screenshots/
@@ -162,7 +162,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-logs-primary
           path: logs/
@@ -190,22 +190,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
 
       - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: 'stable'
 
       - name: Download rerun list
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: rerun-txt
           path: target/
@@ -257,7 +257,7 @@ jobs:
 
       - name: Upload rerun Allure report
         if: always() && steps.rerun_check.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-report-rerun
           path: target/site/allure-rerun-report/
@@ -266,7 +266,7 @@ jobs:
 
       - name: Upload rerun Cucumber report
         if: always() && steps.rerun_check.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cucumber-report-rerun
           path: target/cucumber-reports/rerun-cucumber.html
@@ -275,7 +275,7 @@ jobs:
 
       - name: Upload rerun logs
         if: always() && steps.rerun_check.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-logs-rerun
           path: logs/
@@ -302,13 +302,13 @@ jobs:
 
     steps:
       - name: Download primary Allure report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: allure-report-primary
           path: allure-report
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-report
