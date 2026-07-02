@@ -2,6 +2,7 @@ package com.hybrid.framework.stepdefs;
 
 import com.hybrid.framework.api.ApiUtils;
 import com.hybrid.framework.driver.DriverManager;
+import com.hybrid.framework.utils.BrowserLogUtils;
 import com.hybrid.framework.utils.DownloadUtils;
 import com.hybrid.framework.utils.ScreenshotUtils;
 import com.hybrid.framework.wiremock.WireMockSupport;
@@ -85,6 +86,12 @@ public class Hooks {
                     scenario.attach(screenshot, "image/png", "Failure Screenshot");
                 }
                 ScreenshotUtils.attachToAllure("Failure: " + scenario.getName());
+
+                String consoleLogs = BrowserLogUtils.captureAsText();
+                if (!consoleLogs.isEmpty()) {
+                    scenario.attach(consoleLogs, "text/plain", "Browser Console");
+                }
+                BrowserLogUtils.attachToAllure("Browser Console: " + scenario.getName());
             }
         } else {
             LOG.info("Scenario PASSED: {}", scenario.getName());

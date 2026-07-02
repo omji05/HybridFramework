@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chromium.ChromiumOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -118,6 +119,7 @@ public final class BrowserFactory {
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--remote-allow-origins=*");
+        enableBrowserConsoleLogging(options);
         options.setExperimentalOption("prefs", buildChromiumDownloadPrefs());
         if (headless) {
             options.addArguments("--headless=new");
@@ -144,12 +146,20 @@ public final class BrowserFactory {
     private static EdgeOptions buildEdgeOptions(boolean headless) {
         EdgeOptions options = new EdgeOptions();
         options.addArguments("--start-maximized");
+        enableBrowserConsoleLogging(options);
         options.setExperimentalOption("prefs", buildChromiumDownloadPrefs());
         if (headless) {
             options.addArguments("--headless=new");
             options.addArguments("--window-size=1920,1080");
         }
         return options;
+    }
+
+    private static void enableBrowserConsoleLogging(ChromiumOptions<?> options) {
+        if (!ConfigReader.getInstance().getBoolean("browser.console.log.on.fail", true)) {
+            return;
+        }
+        options.setCapability("goog:loggingPrefs", Map.of("browser", "SEVERE"));
     }
 
     private static Map<String, Object> buildChromiumDownloadPrefs() {

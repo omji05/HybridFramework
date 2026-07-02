@@ -92,6 +92,22 @@ jobs:
             sh -c "$TEST_CMD"
         continue-on-error: true
 
+      - name: Load Allure history from gh-pages
+        if: always()
+        uses: actions/checkout@v5
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Preserve Allure history (grid report)
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          if [ -d gh-pages/history ]; then
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
       - name: Generate Allure report
         if: always()
         run: |
@@ -117,24 +133,6 @@ jobs:
           path: target/site/allure-maven-plugin/
           retention-days: 30
 
-      # - name: Upload Cucumber report
-      #   if: always()
-      #   uses: actions/upload-artifact@v5
-      #   with:
-      #     name: cucumber-report-grid
-      #     path: target/cucumber-reports/cucumber.html
-      #     if-no-files-found: warn
-      #     retention-days: 30
-
-      # - name: Upload failure screenshots
-      #   if: failure()
-      #   uses: actions/upload-artifact@v5
-      #   with:
-      #     name: failure-screenshots-grid
-      #     path: target/reports/screenshots/
-      #     if-no-files-found: ignore
-      #     retention-days: 15
-
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v5
@@ -151,3 +149,28 @@ jobs:
       - name: Fail job if tests failed
         if: steps.primary.outcome == 'failure'
         run: exit 1
+
+  publish-report:
+    name: Publish Allure Report (Grid)
+    needs: test
+    if: always() && github.ref == 'refs/heads/main' && needs.test.result != 'cancelled'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Download grid Allure report
+        uses: actions/download-artifact@v5
+        with:
+          name: allure-report-grid
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+          keep_files: false
