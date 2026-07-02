@@ -1,4 +1,4 @@
-@api @wiremock @smoke
+@api @wiremock
 Feature: Login via WireMock file-based stub
   As a test engineer
   I want to stub the login API in-process
