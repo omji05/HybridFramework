@@ -33,7 +33,27 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Start Selenium Grid (hub + Chrome node)
-        run: docker compose up -d --wait
+        env:
+          # Runner-level proxy can break in-container hub health checks
+          NO_PROXY: localhost,127.0.0.1,selenium-hub,node-chrome
+          no_proxy: localhost,127.0.0.1,selenium-hub,node-chrome
+        run: |
+          docker compose up -d
+
+          echo "Waiting for Selenium Grid hub..."
+          for i in $(seq 1 60); do
+            if curl -sf --noproxy '*' http://localhost:4444/status | grep -q '"ready"'; then
+              echo "Grid hub is ready."
+              docker compose ps
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Grid hub did not become ready in time."
+          docker compose ps -a
+          docker logs selenium-hub
+          exit 1
 
       - name: Run BDD suite via Grid
         id: primary

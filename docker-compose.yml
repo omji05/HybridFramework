@@ -9,12 +9,16 @@ services:
       - "4442:4442"
       - "4443:4443"
       - "4444:4444"
+    environment:
+      # GHA runners set HTTP(S)_PROXY; bypass for in-container health checks
+      NO_PROXY: localhost,127.0.0.1,selenium-hub
+      no_proxy: localhost,127.0.0.1,selenium-hub
     healthcheck:
-      test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
+      test: ["CMD-SHELL", "curl -sf --noproxy '*' http://localhost:4444/status | grep -q '\"ready\"'"]
+      interval: 15s
+      timeout: 30s
+      retries: 10
+      start_period: 30s
 
   node-chrome:
     image: selenium/node-chrome:${SELENIUM_VERSION:-4.27.0}
@@ -25,4 +29,7 @@ services:
       SE_EVENT_BUS_HOST: selenium-hub
       SE_EVENT_BUS_PUBLISH_PORT: "4442"
       SE_EVENT_BUS_SUBSCRIBE_PORT: "4443"
+      SE_NODE_MAX_SESSIONS: "2"
+      NO_PROXY: localhost,127.0.0.1,selenium-hub
+      no_proxy: localhost,127.0.0.1,selenium-hub
     shm_size: "2gb"
