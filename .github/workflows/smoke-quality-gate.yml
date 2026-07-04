@@ -1,0 +1,90 @@
+name: Smoke Quality Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser (chrome, firefox, edge)'
+        required: false
+        default: 'chrome'
+      environment:
+        description: 'Target environment (qa, staging)'
+        required: false
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - staging
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  smoke:
+    name: Smoke (${{ github.event.inputs.environment || 'qa' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 'stable'
+
+      - name: Run smoke tests
+        id: smoke
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+          API_AUTH_USERNAME: ${{ secrets.API_AUTH_USERNAME }}
+          API_AUTH_PASSWORD: ${{ secrets.API_AUTH_PASSWORD }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          API_LOG_VERBOSE: false
+        run: |
+          BROWSER="${{ github.event.inputs.browser || 'chrome' }}"
+          TARGET_ENV="${{ github.event.inputs.environment || 'qa' }}"
+
+          mvn clean test -Psmoke \
+            -Denvironment="$TARGET_ENV" \
+            -Dbrowser="$BROWSER" \
+            -Dheadless=true \
+            -Dbdd.rerun.enabled=false \
+            -Dtestng.suite.name=testng-bdd-primary.xml
+        continue-on-error: true
+
+      - name: Generate Allure report
+        if: always()
+        run: mvn allure:report
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure-report-smoke
+          path: target/site/allure-maven-plugin/
+          retention-days: 14
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure-results-smoke
+          path: target/allure-results/
+          retention-days: 14
+
+      - name: Fail job if smoke tests failed
+        if: steps.smoke.outcome == 'failure'
+        run: exit 1
