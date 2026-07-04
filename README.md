@@ -2,7 +2,7 @@
 
 > Industry-level, unified solution for **UI** and **API** testing — scalable, thread-safe, and CI/CD-ready.
 
-The reference application is **[EventHub](https://eventhub.rahulshettyacademy.com)** (UI + REST API). API tests also include **WireMock** stubs for isolated, CI-friendly scenarios.
+The reference application is **[EventHub](https://eventhub.rahulshettyacademy.com)** (UI + REST API). API tests also include **WireMock** stubs for isolated, CI-friendly scenarios...
 
 ---
 
